@@ -5,6 +5,8 @@ import (
 	"time"
 )
 
+//InvalidTTLErr is an error regarding the Options.TTLOptions.TTL passed in to
+//NewMongoDBStore
 type InvalidTTLErr struct {
 	invalidTTL time.Duration
 }

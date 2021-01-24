@@ -16,6 +16,8 @@ import (
 	"time"
 )
 
+//MongoDBStore is an implementation of Gorilla/Sesions (github.com/gorilla/sessions)
+//based on the official MongoDB golang driver(https://github.com/mongodb/mongo-go-driver).
 type MongoDBStore struct {
 	collection     *mongo.Collection
 	ttl            time.Duration
@@ -25,6 +27,11 @@ type MongoDBStore struct {
 	logger         log.Logger
 }
 
+//NewMongoDBStore accepts a pre-configured Collection, options for the implementation
+//as well as default options for new Sessions.  It also accepts a logger that conforms
+//to the GoKit logger interface (Log(...interface{}) error).  All errors returned from Log
+//are suppressed.  The last argument is a variadic argument of implementations of
+//securecookie.Codec(https://pkg.go.dev/github.com/gorilla/securecookie#Codec)
 func NewMongoDBStore(
 	collection *mongo.Collection,
 	storeOptions Options,
@@ -32,7 +39,7 @@ func NewMongoDBStore(
 	logger log.Logger,
 	codecs ...securecookie.Codec,
 ) (*MongoDBStore, error) {
-	if !storeOptions.EnableLogging {
+	if !storeOptions.Logging.Enabled {
 		logger = log.NewNopLogger()
 	}
 
@@ -73,10 +80,15 @@ func NewMongoDBStore(
 	}, nil
 }
 
+//Get creates or retrieves a session based on a cookie attached to a request with the
+//key of `name`.  The created/retrieved session is cached in the sessions Registry.
+//See the sessions.CookieStore for more information(https://pkg.go.dev/github.com/gorilla/sessions#CookieStore.Get)
 func (store *MongoDBStore) Get(r *http.Request, name string) (*sessions.Session, error) {
 	return sessions.GetRegistry(r).Get(store, name)
 }
 
+//Save gob encodes sess.Values and optionally encrypts the data depending on codec.  The resulting value
+//is then stored under sess.ID in the backing datastore.
 func (store *MongoDBStore) Save(r *http.Request, w http.ResponseWriter, sess *sessions.Session) error {
 	var err error
 	if sess.Options.MaxAge <= 0 {
@@ -160,6 +172,10 @@ func (store *MongoDBStore) delete(ctx context.Context, sessionID string) error {
 	return store.collection.FindOneAndDelete(ctx, bson.M{"_id": oid}).Err()
 }
 
+//New creates a new Session with default Session options defined during MongoDBStore instantiation.
+//If a cookie exists with the key `sessionKey`, New will attempt to load a session from the datastore based
+//on the decoded cookie value.  Per gorilla/sessions, New will always return at least a new usable session,
+//along with any accompanying error.
 func (store *MongoDBStore) New(r *http.Request, sessionKey string) (*sessions.Session, error) {
 	sess := sessions.NewSession(store, sessionKey)
 	sess.ID = primitive.NewObjectID().Hex()
