@@ -12,10 +12,10 @@ func makeTTLIndexModel(ttl time.Duration) mongo.IndexModel {
 	return mongo.IndexModel{
 		Keys: bson.D{
 			{
-				Key: "last_modified",
+				Key:   "last_modified",
 				Value: 1,
 			},
 		},
-		Options:  idxOpts,
+		Options: idxOpts,
 	}
 }

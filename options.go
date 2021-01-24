@@ -7,15 +7,15 @@ import (
 //Options is a collection of settings and options relevant to the implementation
 //of the Store
 type Options struct {
-	TTLOptions    TTLOptions
-	Logging       LoggingOptions
+	TTLOptions     TTLOptions
+	LoggingOptions LoggingOptions
 }
 
 //TTLOptions is a collection of settings and options regarding the TimeToLive
 //functionality of the Store
 type TTLOptions struct {
 	EnsureTTLIndex bool
-	TTL time.Duration
+	TTL            time.Duration
 }
 
 //LoggingOptions is a collection of settings and options regarding the logging

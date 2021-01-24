@@ -18,4 +18,3 @@ func NewInvalidTTLErr(ttl time.Duration) *InvalidTTLErr {
 func (e *InvalidTTLErr) Error() string {
 	return fmt.Sprintf("ttl cannot be 0 or fewer seconds; supplies ttl: %d", int(e.invalidTTL.Seconds()))
 }
-

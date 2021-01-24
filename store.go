@@ -39,7 +39,11 @@ func NewMongoDBStore(
 	logger log.Logger,
 	codecs ...securecookie.Codec,
 ) (*MongoDBStore, error) {
-	if !storeOptions.Logging.Enabled {
+	if logger == nil {
+		storeOptions.LoggingOptions.Enabled = false
+	}
+
+	if !storeOptions.LoggingOptions.Enabled {
 		logger = log.NewNopLogger()
 	}
 
@@ -220,7 +224,7 @@ func (store *MongoDBStore) load(ctx context.Context, sess *sessions.Session) err
 			"message", "failed to load allegedly existing session",
 			"session_id", sess.ID,
 			"error", err,
-			)
+		)
 		return err
 	}
 

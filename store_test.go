@@ -147,7 +147,7 @@ func (ss *SaveSuite) SetupSuite() {
 	var err error
 	ss.store, err = NewMongoDBStore(
 		ss.collection,
-		Options{TTLOptions: TTLOptions{ TTL: 5 * time.Second, EnsureTTLIndex: false}},
+		Options{TTLOptions: TTLOptions{TTL: 5 * time.Second, EnsureTTLIndex: false}},
 		&sessions.Options{
 			MaxAge: 50,
 		},
